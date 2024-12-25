@@ -1,0 +1,19 @@
+ gem "opentelemetry-sdk"
+ gem "opentelemetry-exporter-google_cloud_trace"
+ gem "opentelemetry-instrumentation-http"
+ gem "opentelemetry-instrumentation-http_client"
+ 
+ require "opentelemetry-sdk"
+ require "opentelemetry/instrumentation/http_client"
+ require "opentelemetry/instrumentation/http"
+ require "opentelemetry/exporter/google_cloud_trace"
+ OpenTelemetry::SDK.configure do |c|
+   c.service_name = "ServiceName"
+   c.add_span_processor(
+     OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
+       OpenTelemetry::Exporter::GoogleCloudTrace::SpanExporter.new
+     )
+   )
+   c.use "OpenTelemetry::Instrumentation::Http"
+   c.use "OpenTelemetry::Instrumentation::HttpClient"
+ end
